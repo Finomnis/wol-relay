@@ -2,11 +2,36 @@
 name = "wol-relay"
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.85"
+
+[features]
+cli = ["dep:clap", "dep:env_logger"]
+
+[[bin]]
+name = "wol-relay"
+required-features = ["cli"]
 
 [dependencies]
-env_logger = "0.11.8"
 log = "0.4.27"
 wol = "0.3.1"
+
+[dependencies.env_logger]
+optional = true
+version = "0.11.8"
+
+[dependencies.clap]
+optional = true
+version = "4.5.42"
+default-features = false
+features = [
+    "std",
+    "help",
+    "usage",
+    "error-context",
+    "suggestions",
+    "derive",
+    "wrap_help",
+]
 
 [profile.release]
 strip = true      # Automatically strip symbols from the binary.
