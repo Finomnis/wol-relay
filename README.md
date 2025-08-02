@@ -20,7 +20,7 @@ If WoL messages do not get picked up by this relay server, make sure they are no
 ## Run as binary
 
 Install using `cargo`:
-```
+```none
 cargo install wol-relay --features cli
 ```
 
