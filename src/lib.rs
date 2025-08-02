@@ -1,3 +1,8 @@
+#![deny(missing_docs)]
+#![forbid(unsafe_code)]
+#![doc = include_str!("../README.md")]
+#![doc(issue_tracker_base_url = "https://github.com/Finomnis/wol-relay/issues")]
+
 use std::{
     io,
     net::{IpAddr, Ipv4Addr, SocketAddr, ToSocketAddrs, UdpSocket},
@@ -8,19 +13,20 @@ use wol::MacAddr6;
 mod recursion_prevention;
 mod wol_message;
 
+/// Used to configure and bind Wake-on-LAN receiver socket
 pub struct WolReceiver {
     addr: SocketAddr,
 }
 
 impl WolReceiver {
-    /// Creates a new WoL receiver, listening on `0.0.0.0:9`.
+    /// Create a new WoL receiver config.
     pub fn new() -> Self {
         Self {
             addr: SocketAddr::from((Ipv4Addr::UNSPECIFIED, 9)),
         }
     }
 
-    /// Sets the IP address to listen at.
+    /// Set the IP address to listen on.
     ///
     /// Default: `0.0.0.0`.
     ///
@@ -33,7 +39,7 @@ impl WolReceiver {
         self
     }
 
-    /// Sets the port to listen at.
+    /// Set the port to listen on.
     ///
     /// Default: `9`.
     ///
@@ -64,11 +70,25 @@ impl Default for WolReceiver {
     }
 }
 
+/// A socket that listens for Wake-on-LAN packets
+///
+/// Implements [`Iterator`], delivering a continuous stream of
+/// received WoL requests.
+///
+/// Filters out requests that originate from this machine, to
+/// prevent recursion.
 pub struct WolSocket {
-    pub socket: UdpSocket,
+    socket: UdpSocket,
 }
 
 impl WolSocket {
+    /// Relay all received WoL packets to the given address.
+    ///
+    /// # Arguments
+    ///
+    /// * `host` - The target hostname/ip address. In most cases, this will be a broadcast address.
+    /// * `port` - The port number. In most cases `9`.
+    ///
     pub fn relay_to(&mut self, host: &str, port: u16) -> io::Result<()> {
         for target_mac in self {
             let target_mac = target_mac?;
@@ -91,6 +111,13 @@ impl WolSocket {
         }
 
         Ok(())
+    }
+
+    /// Returns the socket address that this socket was created from.
+    ///
+    /// See [`UdpSocket::local_addr`].
+    pub fn local_addr(&self) -> io::Result<SocketAddr> {
+        self.socket.local_addr()
     }
 }
 

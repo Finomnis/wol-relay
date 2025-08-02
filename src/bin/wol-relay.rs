@@ -55,7 +55,7 @@ fn main() -> ExitCode {
         }
     };
 
-    if let Ok(local_addr) = wol_socket.socket.local_addr() {
+    if let Ok(local_addr) = wol_socket.local_addr() {
         log::info!("Listening for WoL packets on '{local_addr}'");
     } else {
         log::info!("Listening for WoL packets");

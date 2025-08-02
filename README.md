@@ -17,7 +17,23 @@ While WoL messages can be embedded in any payload, its most common form is as a 
 If WoL messages do not get picked up by this relay server, make sure they are not using a different port, protocol or format.
 
 
-## Usage Example
+## Run as binary
+
+Install using `cargo`:
+```
+cargo install wol-relay --features cli
+```
+
+Then, simply running `wol-relay` will run the relay server.
+
+Use `wol-relay --help` for configuration options.
+
+
+## Run as docker container
+
+TODO
+
+## Run via docker-compose
 
 TODO
 
