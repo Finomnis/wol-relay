@@ -5,6 +5,7 @@ use std::{
 
 use wol::MacAddr6;
 
+mod recursion_prevention;
 mod wol_message;
 
 pub struct WolReceiver {
@@ -64,7 +65,7 @@ impl Default for WolReceiver {
 }
 
 pub struct WolIter {
-    socket: UdpSocket,
+    pub socket: UdpSocket,
 }
 
 impl Iterator for WolIter {
@@ -75,14 +76,22 @@ impl Iterator for WolIter {
             let mut buf = vec![0u8; wol_message::WOL_MAX_SIZE];
             match self.socket.recv_from(&mut buf) {
                 Ok((size, addr)) => {
-                    if let Some(buf) = buf.get(..size) {
-                        if let Some(target_mac) = wol_message::parse_wol_message(buf) {
-                            log::debug!("Received WoL from {} to wake {}", addr.ip(), target_mac);
-                            return Some(target_mac);
-                        } else {
-                            log::debug!("Received non-WoL message: {buf:x?}");
+                    if !recursion_prevention::is_our_ip(addr) {
+                        if let Some(buf) = buf.get(..size) {
+                            if let Some(target_mac) = wol_message::parse_wol_message(buf) {
+                                log::debug!(
+                                    "Received WoL from {} to wake {}",
+                                    addr.ip(),
+                                    target_mac
+                                );
+                                return Some(target_mac);
+                            } else {
+                                log::debug!("Received non-WoL message: {buf:x?}");
+                            }
                         }
-                    };
+                    } else {
+                        log::debug!("Detected recursion, skipping packet ...");
+                    }
                 }
                 Err(e) => {
                     log::error!("Error while listening for WoL Packets: {e}");

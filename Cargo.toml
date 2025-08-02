@@ -33,6 +33,10 @@ features = [
     "wrap_help",
 ]
 
+[dependencies.clap-verbosity-flag]
+optional = true
+version = "3.0.3"
+
 [profile.release]
 strip = true      # Automatically strip symbols from the binary.
 lto = true
