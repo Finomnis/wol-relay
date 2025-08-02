@@ -14,11 +14,11 @@ mod recursion_prevention;
 mod wol_message;
 
 /// Used to configure and bind Wake-on-LAN receiver socket
-pub struct WolReceiver {
+pub struct WolReceiverConfig {
     addr: SocketAddr,
 }
 
-impl WolReceiver {
+impl WolReceiverConfig {
     /// Create a new WoL receiver config.
     pub fn new() -> Self {
         Self {
@@ -64,7 +64,7 @@ impl WolReceiver {
     }
 }
 
-impl Default for WolReceiver {
+impl Default for WolReceiverConfig {
     fn default() -> Self {
         Self::new()
     }

@@ -4,7 +4,7 @@ use std::{
     net::{IpAddr, Ipv4Addr},
     process::ExitCode,
 };
-use wol_relay::WolReceiver;
+use wol_relay::WolReceiverConfig;
 
 #[derive(Parser, Debug, Clone)]
 struct CliArgs {
@@ -38,7 +38,7 @@ fn main() -> ExitCode {
         .filter_level(args.verbose.log_level_filter())
         .init();
 
-    let mut wol_socket = match WolReceiver::new()
+    let mut wol_receiver = match WolReceiverConfig::new()
         .with_ip(args.listen_addr)
         .with_port(args.listen_port)
         .bind()
@@ -55,13 +55,13 @@ fn main() -> ExitCode {
         }
     };
 
-    if let Ok(local_addr) = wol_socket.local_addr() {
+    if let Ok(local_addr) = wol_receiver.local_addr() {
         log::info!("Listening for WoL packets on '{local_addr}'");
     } else {
         log::info!("Listening for WoL packets");
     }
 
-    match wol_socket.relay_to(&args.target_host, args.target_port) {
+    match wol_receiver.relay_to(&args.target_host, args.target_port) {
         Ok(()) => ExitCode::SUCCESS,
         Err(e) => {
             log::error!("Error while listening for WoL Packets: {e}");
