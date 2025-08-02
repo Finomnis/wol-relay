@@ -57,8 +57,8 @@ impl WolReceiverConfig {
     /// # Return
     ///
     /// An iterator of WoL messages
-    pub fn bind(self) -> io::Result<WolSocket> {
-        Ok(WolSocket {
+    pub fn bind(self) -> io::Result<WolReceiver> {
+        Ok(WolReceiver {
             socket: UdpSocket::bind(self.addr)?,
         })
     }
@@ -77,11 +77,11 @@ impl Default for WolReceiverConfig {
 ///
 /// Filters out requests that originate from this machine, to
 /// prevent recursion.
-pub struct WolSocket {
+pub struct WolReceiver {
     socket: UdpSocket,
 }
 
-impl WolSocket {
+impl WolReceiver {
     /// Relay all received WoL packets to the given address.
     ///
     /// # Arguments
@@ -121,7 +121,7 @@ impl WolSocket {
     }
 }
 
-impl Iterator for WolSocket {
+impl Iterator for WolReceiver {
     type Item = io::Result<MacAddr6>;
 
     fn next(&mut self) -> Option<Self::Item> {
