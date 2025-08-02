@@ -43,6 +43,8 @@ fn main() -> ExitCode {
         .filter_level(args.verbose.log_level_filter())
         .init();
 
+    log::info!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
+
     let mut wol_receiver = match WolReceiverConfig::new()
         .with_ip(args.listen_addr)
         .with_port(args.listen_port)
