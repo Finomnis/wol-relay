@@ -44,7 +44,7 @@ jobs:
         run: cargo test --release --verbose $DOCTEST_XCOMPILE -- --test-threads 1
 
       - name: Build bin
-        run: cargo build --release --all-features
+        run: cargo build --release --features cli
 
 
   msrv:
