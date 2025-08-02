@@ -1,7 +1,7 @@
 use clap::Parser;
 use clap_verbosity_flag::{Verbosity, WarnLevel};
 use std::{
-    net::{IpAddr, Ipv4Addr, ToSocketAddrs},
+    net::{IpAddr, Ipv4Addr},
     process::ExitCode,
 };
 use wol_relay::WolReceiver;
@@ -38,10 +38,10 @@ fn main() -> ExitCode {
         .filter_level(args.verbose.log_level_filter())
         .init();
 
-    let wol_listener = match WolReceiver::new()
+    let mut wol_socket = match WolReceiver::new()
         .with_ip(args.listen_addr)
         .with_port(args.listen_port)
-        .run()
+        .bind()
     {
         Ok(listener) => listener,
         Err(e) => {
@@ -55,35 +55,17 @@ fn main() -> ExitCode {
         }
     };
 
-    if let Ok(local_addr) = wol_listener.socket.local_addr() {
+    if let Ok(local_addr) = wol_socket.socket.local_addr() {
         log::info!("Listening for WoL packets on '{local_addr}'");
     } else {
         log::info!("Listening for WoL packets");
     }
 
-    for target_mac in wol_listener {
-        log::info!("Relaying WoL packet for '{target_mac}'");
-
-        let target_addrs = match (args.target_host.as_str(), args.target_port).to_socket_addrs() {
-            Ok(addr) => addr,
-            Err(e) => {
-                log::error!(
-                    "Unable to resolve '{}:{}': {}",
-                    args.target_host,
-                    args.target_port,
-                    e
-                );
-                continue;
-            }
-        };
-
-        for target_addr in target_addrs {
-            log::debug!("Sending WoL packet for '{target_mac}' to '{target_addr}'");
-            if let Err(e) = wol::send_magic_packet(target_mac, None, target_addr) {
-                log::error!("Failed to send WoL packet to '{target_addr}': {e}");
-            }
+    match wol_socket.relay_to(&args.target_host, args.target_port) {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(e) => {
+            log::error!("Error while listening for WoL Packets: {e}");
+            ExitCode::FAILURE
         }
     }
-
-    ExitCode::SUCCESS
 }

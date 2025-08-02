@@ -1,6 +1,6 @@
 use std::{
     io,
-    net::{IpAddr, Ipv4Addr, SocketAddr, UdpSocket},
+    net::{IpAddr, Ipv4Addr, SocketAddr, ToSocketAddrs, UdpSocket},
 };
 
 use wol::MacAddr6;
@@ -46,13 +46,13 @@ impl WolReceiver {
         self
     }
 
-    /// Start listening.
+    /// Bind the socket and start listening.
     ///
     /// # Return
     ///
     /// An iterator of WoL messages
-    pub fn run(self) -> io::Result<WolIter> {
-        Ok(WolIter {
+    pub fn bind(self) -> io::Result<WolSocket> {
+        Ok(WolSocket {
             socket: UdpSocket::bind(self.addr)?,
         })
     }
@@ -64,12 +64,38 @@ impl Default for WolReceiver {
     }
 }
 
-pub struct WolIter {
+pub struct WolSocket {
     pub socket: UdpSocket,
 }
 
-impl Iterator for WolIter {
-    type Item = MacAddr6;
+impl WolSocket {
+    pub fn relay_to(&mut self, host: &str, port: u16) -> io::Result<()> {
+        for target_mac in self {
+            let target_mac = target_mac?;
+            log::info!("Relaying WoL packet for '{target_mac}'");
+
+            let target_addrs = match (host, port).to_socket_addrs() {
+                Ok(addr) => addr,
+                Err(e) => {
+                    log::error!("Unable to resolve '{host}:{port}': {e}");
+                    continue;
+                }
+            };
+
+            for target_addr in target_addrs {
+                log::debug!("Sending WoL packet for '{target_mac}' to '{target_addr}'");
+                if let Err(e) = wol::send_magic_packet(target_mac, None, target_addr) {
+                    log::error!("Failed to send WoL packet to '{target_addr}': {e}");
+                }
+            }
+        }
+
+        Ok(())
+    }
+}
+
+impl Iterator for WolSocket {
+    type Item = io::Result<MacAddr6>;
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
@@ -84,7 +110,7 @@ impl Iterator for WolIter {
                                     addr.ip(),
                                     target_mac
                                 );
-                                return Some(target_mac);
+                                return Some(Ok(target_mac));
                             } else {
                                 log::debug!("Received non-WoL message: {buf:x?}");
                             }
@@ -94,8 +120,7 @@ impl Iterator for WolIter {
                     }
                 }
                 Err(e) => {
-                    log::error!("Error while listening for WoL Packets: {e}");
-                    return None;
+                    return Some(Err(e));
                 }
             }
         }
