@@ -6,9 +6,15 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/Finomnis/wol-relay/ci.yml?branch=main)](https://github.com/Finomnis/wol-relay/actions/workflows/ci.yml?query=branch%3Amain)
 [![docs.rs](https://img.shields.io/docsrs/wol-relay)](https://docs.rs/wol-relay)
 
-A Wake-On-LAN relay server written in Rust.
+A Wake-on-LAN relay server written in Rust.
 
 Provides the ability to wake computers in the subnet of the relay server from other subnets.
+
+## Technical Details
+
+While WoL messages can be embedded in any payload, its most common form is as a 102 byte UDP packet to port 9, which is what this server is listening for.
+
+If WoL messages do not get picked up by this relay server, make sure they are not using a different port, protocol or format.
 
 
 ## Usage Example
