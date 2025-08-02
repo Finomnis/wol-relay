@@ -11,7 +11,7 @@ description = "A Wake-on-LAN relay server."
 keywords = ["wol", "wake-on-lan"]
 categories = ["network-programming"]
 
-exclude = ["/.gitignore", "/.github/", "/TODO.txt", "/docker/"]
+exclude = ["/.gitignore", "/.github/", "/TODO.txt", "/Dockerfile"]
 
 [features]
 cli = ["dep:clap", "dep:clap-verbosity-flag", "dep:env_logger"]
