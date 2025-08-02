@@ -19,7 +19,7 @@ If WoL messages do not get picked up by this relay server, make sure they are no
 
 ## Run as binary
 
-```bash
+```none
 cargo install wol-relay --features cli
 ```
 
@@ -30,13 +30,13 @@ Use `wol-relay --help` for configuration options.
 
 ## Run as docker container
 
-```bash
+```none
 docker run --rm -ti --network host ghcr.io/finomnis/wol-relay -v
 ```
 
 ## Run via docker-compose
 
-```yml
+```yaml
 version: '2'
 services:
   wol-relay:
