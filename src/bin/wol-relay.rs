@@ -32,6 +32,11 @@ struct CliArgs {
 }
 
 fn main() -> ExitCode {
+    // React to SIGINT in Docker containers.
+    // Not quite sure why this is needed, as SIGINT should
+    // terminate if unhandled.
+    ctrlc::set_handler(|| std::process::exit(1)).ok();
+
     let args = CliArgs::parse();
 
     env_logger::builder()

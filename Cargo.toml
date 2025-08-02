@@ -14,7 +14,7 @@ categories = ["network-programming"]
 exclude = ["/.gitignore", "/.github/", "/TODO.txt", "/Dockerfile"]
 
 [features]
-cli = ["dep:clap", "dep:clap-verbosity-flag", "dep:env_logger"]
+cli = ["dep:clap", "dep:clap-verbosity-flag", "dep:env_logger", "dep:ctrlc"]
 
 [[bin]]
 name = "wol-relay"
@@ -45,6 +45,11 @@ features = [
 [dependencies.clap-verbosity-flag]
 optional = true
 version = "3.0.3"
+
+[dependencies.ctrlc]
+optional = true
+version = "3.4.7"
+features = ["termination"]
 
 [profile.release]
 strip = true      # Automatically strip symbols from the binary.
