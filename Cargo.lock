@@ -233,12 +233,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
 
 [[package]]
-name = "macaddr"
-version = "1.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "baee0bbc17ce759db233beb01648088061bf678383130602a298e6998eedb2d8"
-
-[[package]]
 name = "memchr"
 version = "2.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -471,12 +465,9 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[package]]
 name = "wol"
-version = "0.3.1"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a79dd9fd8e71812bff3b6acd9ebc2a5d1e9ec6245ebd067637201b279ba4dd1"
-dependencies = [
- "macaddr",
-]
+checksum = "5ab6505f052d8cf2f72a0f11bb5483ff932ac806739b9ae0ac1d9316d200e8e2"
 
 [[package]]
 name = "wol-relay"
