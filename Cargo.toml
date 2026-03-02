@@ -21,7 +21,7 @@ name = "wol-relay"
 required-features = ["cli"]
 
 [dependencies]
-log = "0.4.27"
+log = "0.4.29"
 wol = "0.3.1"
 
 [dependencies.env_logger]
